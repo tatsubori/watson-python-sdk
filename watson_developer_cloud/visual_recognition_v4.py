@@ -32,8 +32,8 @@ from .watson_service import WatsonService
 ##############################################################################
 
 
-class VisualRecognitionV3(WatsonService):
-    """The Visual Recognition V3 service."""
+class VisualRecognitionV4(WatsonService):
+    """The Visual Recognition V4 service."""
 
     default_url = 'https://gateway.watsonplatform.net/visual-recognition/api'
 
@@ -149,7 +149,7 @@ class VisualRecognitionV3(WatsonService):
         if 'headers' in kwargs:
             headers.update(kwargs.get('headers'))
         headers[
-            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V3;operation_id=classify'
+            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=classify'
 
         params = {'version': self.version}
 
@@ -172,7 +172,7 @@ class VisualRecognitionV3(WatsonService):
             form_data['classifier_ids'] = (None, classifier_ids,
                                            'application/json')
 
-        url = '/v3/classify'
+        url = '/v4/classify'
         response = self.request(
             method='POST',
             url=url,
@@ -234,7 +234,7 @@ class VisualRecognitionV3(WatsonService):
         if 'headers' in kwargs:
             headers.update(kwargs.get('headers'))
         headers[
-            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V3;operation_id=detect_faces'
+            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=detect_faces'
 
         params = {'version': self.version}
 
@@ -248,7 +248,7 @@ class VisualRecognitionV3(WatsonService):
         if url:
             form_data['url'] = (None, url, 'text/plain')
 
-        url = '/v3/detect_faces'
+        url = '/v4/detect_faces'
         response = self.request(
             method='POST',
             url=url,
@@ -315,7 +315,7 @@ class VisualRecognitionV3(WatsonService):
         if 'headers' in kwargs:
             headers.update(kwargs.get('headers'))
         headers[
-            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V3;operation_id=create_classifier'
+            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=create_classifier'
 
         params = {'version': self.version}
 
@@ -337,7 +337,7 @@ class VisualRecognitionV3(WatsonService):
                 filename = basename(value.name)
             form_data[key] = (filename, value, 'application/octet-stream')
 
-        url = '/v3/classifiers'
+        url = '/v4/classifiers'
         response = self.request(
             method='POST',
             url=url,
@@ -364,11 +364,11 @@ class VisualRecognitionV3(WatsonService):
         if 'headers' in kwargs:
             headers.update(kwargs.get('headers'))
         headers[
-            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V3;operation_id=delete_classifier'
+            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=delete_classifier'
 
         params = {'version': self.version}
 
-        url = '/v3/classifiers/{0}'.format(
+        url = '/v4/classifiers/{0}'.format(
             *self._encode_path_vars(classifier_id))
         response = self.request(
             method='DELETE',
@@ -397,11 +397,11 @@ class VisualRecognitionV3(WatsonService):
         if 'headers' in kwargs:
             headers.update(kwargs.get('headers'))
         headers[
-            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V3;operation_id=get_classifier'
+            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=get_classifier'
 
         params = {'version': self.version}
 
-        url = '/v3/classifiers/{0}'.format(
+        url = '/v4/classifiers/{0}'.format(
             *self._encode_path_vars(classifier_id))
         response = self.request(
             method='GET',
@@ -426,11 +426,11 @@ class VisualRecognitionV3(WatsonService):
         if 'headers' in kwargs:
             headers.update(kwargs.get('headers'))
         headers[
-            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V3;operation_id=list_classifiers'
+            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=list_classifiers'
 
         params = {'version': self.version, 'verbose': verbose}
 
-        url = '/v3/classifiers'
+        url = '/v4/classifiers'
         response = self.request(
             method='GET',
             url=url,
@@ -492,7 +492,7 @@ class VisualRecognitionV3(WatsonService):
         if 'headers' in kwargs:
             headers.update(kwargs.get('headers'))
         headers[
-            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V3;operation_id=update_classifier'
+            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=update_classifier'
 
         params = {'version': self.version}
 
@@ -513,7 +513,7 @@ class VisualRecognitionV3(WatsonService):
                 filename = basename(value.name)
             form_data[key] = (filename, value, 'application/octet-stream')
 
-        url = '/v3/classifiers/{0}'.format(
+        url = '/v4/classifiers/{0}'.format(
             *self._encode_path_vars(classifier_id))
         response = self.request(
             method='POST',
@@ -548,11 +548,11 @@ class VisualRecognitionV3(WatsonService):
         if 'headers' in kwargs:
             headers.update(kwargs.get('headers'))
         headers[
-            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V3;operation_id=get_core_ml_model'
+            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=get_core_ml_model'
 
         params = {'version': self.version}
 
-        url = '/v3/classifiers/{0}/core_ml_model'.format(
+        url = '/v4/classifiers/{0}/core_ml_model'.format(
             *self._encode_path_vars(classifier_id))
         response = self.request(
             method='GET',
@@ -590,11 +590,11 @@ class VisualRecognitionV3(WatsonService):
         if 'headers' in kwargs:
             headers.update(kwargs.get('headers'))
         headers[
-            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V3;operation_id=delete_user_data'
+            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=delete_user_data'
 
         params = {'version': self.version, 'customer_id': customer_id}
 
-        url = '/v3/user_data'
+        url = '/v4/user_data'
         response = self.request(
             method='DELETE',
             url=url,
