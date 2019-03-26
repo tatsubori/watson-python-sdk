@@ -88,9 +88,65 @@ class VisualRecognitionV4(WatsonService):
         self.version = version
 
     #########################
-    # General
+    # Analysis
     #########################
+    
+    # https://cloud.ibm.com/apidocs/visual-recognition-v4#list-images
+    def analyze(
+            collection_id,
+            image_fp,
+            threshold=0.5,
+            **kwargs):
+        """Analyze images by URL, by file, or both against your own
+        collection. Make sure that training_status.objects.ready is true
+        for the feature before you use a collection to analyze images.
+        
+        :param float threashold: The minimum score a feature must have to
+        be returned.  Constraints: 0.15 <= value <= 1
+        
+        """
+        import requests
+        from requests.auth import HTTPBasicAuth
+        
+        headers = {}
+        if self.default_headers:
+            headers.update(self.default_headers)
+        if 'headers' in kwargs:
+            headers.update(kwargs.get('headers'))
+        headers[
+            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=classify'
 
+        params = {'version': self.version}
+
+        form_data = {}
+        if images_file:
+            if not images_filename and hasattr(images_file, 'name'):
+                images_filename = basename(images_file.name)
+            form_data['images_file'] = (images_filename, images_file,
+                                        images_file_content_type or
+                                        'application/octet-stream')
+        if image_url:
+            form_data['image_url'] = (None, image_url, 'text/plain')
+        if threshold:
+            form_data['threshold'] = (None, threshold, 'application/json')
+        
+        response = requests.post("{}/v4/analyze".format(self.url, collection_id),
+                         auth=HTTPBasicAuth('apikey', self.api_key),
+                         headers={PREVIEW_HEADER_KEY: PREVIEW_HEADER_VALUE},
+                         params=params,
+                         data={'features': "objects",
+                               'collection_ids': collection_id,
+                               'threshold': threshold,
+                              },
+                         files={'images_file': image_fp
+                               }
+                        )
+        return response
+    
+    #########################
+    # Old
+    #########################
+    
     def classify(self,
                  images_file=None,
                  accept_language=None,
