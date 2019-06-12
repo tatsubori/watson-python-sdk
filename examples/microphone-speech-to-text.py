@@ -8,8 +8,8 @@
 
 from __future__ import print_function
 import pyaudio
-from watson_developer_cloud import SpeechToTextV1
-from watson_developer_cloud.websocket import RecognizeCallback, AudioSource
+from ibm_watson import SpeechToTextV1
+from ibm_watson.websocket import RecognizeCallback, AudioSource
 from threading import Thread
 
 try:
@@ -122,7 +122,7 @@ try:
         pass
 except KeyboardInterrupt:
     # stop recording
-    audio_source.completed_recording()
     stream.stop_stream()
     stream.close()
     audio.terminate()
+    audio_source.completed_recording()

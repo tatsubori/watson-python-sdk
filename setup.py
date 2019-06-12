@@ -19,7 +19,7 @@ from setuptools.command.test import test as TestCommand
 import os
 import sys
 
-__version__ = '2.8.0'
+__version__ = '3.0.4'
 
 if sys.argv[-1] == 'publish':
     # test server
@@ -60,18 +60,18 @@ class PyTest(TestCommand):
         sys.exit(errcode)
 
 
-setup(name='watson-developer-cloud',
+setup(name='ibm-watson',
       version=__version__,
       description='Client library to use the IBM Watson Services',
       license='Apache 2.0',
-      install_requires=['requests>=2.0, <3.0', 'python_dateutil>=2.5.3', 'websocket-client==0.48.0'],
+      install_requires=['requests>=2.0, <3.0', 'python_dateutil>=2.5.3', 'websocket-client==0.48.0', 'ibm_cloud_sdk_core>=0.5.0'],
       tests_require=['responses', 'pytest', 'python_dotenv', 'pytest-rerunfailures', 'tox'],
       cmdclass={'test': PyTest},
-      author='Jeffrey Stylos',
-      author_email='jsstylos@us.ibm.com',
+      author='IBM Watson',
+      author_email='watdevex@us.ibm.com',
       long_description=read_md('README.md'),
       url='https://github.com/watson-developer-cloud/python-sdk',
-      packages=['watson_developer_cloud'],
+      packages=['ibm_watson'],
       include_package_data=True,
       keywords='language, vision, question and answer' +
       ' tone_analyzer, natural language classifier,' +
