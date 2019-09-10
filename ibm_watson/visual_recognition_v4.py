@@ -323,7 +323,7 @@ class VisualRecognitionV4(BaseService):
     
     
     # https://cloud.ibm.com/apidocs/visual-recognition-v4#get-image-details
-    def get_image_details(collection_id, image_id):
+    def get_image_details(self, collection_id, image_id):
         headers = {}
         if self.default_headers:
             headers.update(self.default_headers)
