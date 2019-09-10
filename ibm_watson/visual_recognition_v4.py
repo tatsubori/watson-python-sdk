@@ -164,7 +164,7 @@ class VisualRecognitionV4(BaseService):
         # if image_url:
         #     form_data['image_url'] = (None, image_url, 'text/plain')
         if threshold:
-            form_data['threshold'] = (None, threshold, 'application/json')
+            form_data['threshold'] = threshold
         
         response = requests.post("{}/v4/analyze".format(self.url),
                          auth=HTTPBasicAuth('apikey', self.iam_apikey),
