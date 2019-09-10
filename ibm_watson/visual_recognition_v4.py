@@ -23,13 +23,46 @@ from __future__ import absolute_import
 
 import json
 from .common import get_sdk_headers
-from ibm_cloud_sdk_core import BaseService
+from ibm_cloud_sdk_core import BaseService, DetailedResponse
 from ibm_cloud_sdk_core import datetime_to_string, string_to_datetime
 from os.path import basename
 import re
 
 import requests
 from requests.auth import HTTPBasicAuth
+
+
+def create_annotation(self, label, left, top, width, height):
+    return {
+        'object': label,
+        'location': {
+            'left': int(left),
+            'top': int(top),
+            'width': int(width),
+            'height': int(height)
+        }
+    }
+
+
+def wrap_response(response):
+    if 200 <= response.status_code <= 299:
+        if response.status_code == 204 or method == 'HEAD':
+            # There is no body content for a HEAD request or a 204 response
+            return DetailedResponse(None, response.headers, response.status_code)
+        if accept_json:
+            try:
+                response_json = response.json()
+            except:
+                # deserialization fails because there is no text
+                return DetailedResponse(None, response.headers, response.status_code)
+            return DetailedResponse(response_json, response.headers, response.status_code)
+        return DetailedResponse(response, response.headers, response.status_code)
+    else:
+        error_message = None
+        if response.status_code == 401:
+            error_message = 'Unauthorized: Access is denied due to ' \
+                            'invalid credentials'
+            raise ApiException(response.status_code, error_message, http_response=response)
 
 
 ##############################################################################
@@ -165,7 +198,9 @@ class VisualRecognitionV4(BaseService):
         #     form_data['image_url'] = (None, image_url, 'text/plain')
         if threshold:
             form_data['threshold'] = threshold
-        
+
+        # TODO Use self.request() but we need to sort out how to
+        # specify files for FPs
         response = requests.post("{}/v4/analyze".format(self.url),
                          auth=HTTPBasicAuth('apikey', self.iam_apikey),
                          headers=headers,
@@ -174,7 +209,7 @@ class VisualRecognitionV4(BaseService):
                          files={'images_file': image_fp
                                }
                         )
-        return response
+        return wrap_response(response)
 
     
     #########################
@@ -219,7 +254,7 @@ class VisualRecognitionV4(BaseService):
                          params=params,
                          data=form_data
                         )
-        return response
+        return wrap_response(response)
 
     
     #########################
@@ -253,25 +288,13 @@ class VisualRecognitionV4(BaseService):
                                  params=params,
                                  data=form_data,
                                  files={'images_file': image_fp})
-        return response
+        return wrap_response(response)
 
 
     def add_image_ltwh(self, collection_id, image_fp, label, ltwh):
         return self.add_image(collection_id, image_fp, [
             create_annotation(label, *ltwh)
         ])
-
-
-    def create_annotation(self, label, left, top, width, height):
-        return {
-            'object': label,
-            'location': {
-                'left': int(left),
-                'top': int(top),
-                'width': int(width),
-                'height': int(height)
-            }
-        }
     
     
     # https://cloud.ibm.com/apidocs/visual-recognition-v4#list-images
@@ -292,7 +315,7 @@ class VisualRecognitionV4(BaseService):
                                 auth=HTTPBasicAuth('apikey', self.iam_apikey),
                                 headers=headers,
                                 params=params)
-        return response
+        return wrap_response(response)
 
 
     #########################
@@ -321,7 +344,7 @@ class VisualRecognitionV4(BaseService):
                                  auth=HTTPBasicAuth('apikey', self.iam_apikey),
                                  headers=headers,
                                  params=params)
-        return response
+        return wrap_response(response)
     
     
     # https://console.bluemix.net/apidocs/visual-recognition-v4#get-collection-details
@@ -341,7 +364,7 @@ class VisualRecognitionV4(BaseService):
                                 auth=HTTPBasicAuth('apikey', self.iam_apikey),
                                 headers=headers,
                                 params=params)
-        return response
+        return wrap_response(response)
     
     
     # https://cloud.ibm.com/apidocs/visual-recognition-v4#get-image-details
@@ -362,4 +385,4 @@ class VisualRecognitionV4(BaseService):
                                 auth=HTTPBasicAuth('apikey', self.iam_apikey),
                                 headers=headers,
                                 params=params)
-        return response
+        return wrap_response(response)
