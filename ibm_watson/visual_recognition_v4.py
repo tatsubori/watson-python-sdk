@@ -128,7 +128,7 @@ class VisualRecognitionV4(BaseService):
     # https://cloud.ibm.com/apidocs/visual-recognition-v4#analyze-images
     def analyze(
             self,
-            collection_id,
+            collection_ids,
             image_fp,
             threshold=0.5,
             **kwargs):
@@ -151,18 +151,21 @@ class VisualRecognitionV4(BaseService):
         params = {'version': self.version}
 
         form_data = {}
-        if images_file:
-            if not images_filename and hasattr(images_file, 'name'):
-                images_filename = basename(images_file.name)
-            form_data['images_file'] = (images_filename, images_file,
-                                        images_file_content_type or
-                                        'application/octet-stream')
-        if image_url:
-            form_data['image_url'] = (None, image_url, 'text/plain')
+        
+        form_data['collection_ids'] = collection_ids
+
+        # if images_file:
+        #     if not images_filename and hasattr(images_file, 'name'):
+        #         images_filename = basename(images_file.name)
+        #     form_data['images_file'] = (images_filename, images_file,
+        #                                 images_file_content_type or
+        #                                 'application/octet-stream')
+        # if image_url:
+        #     form_data['image_url'] = (None, image_url, 'text/plain')
         if threshold:
             form_data['threshold'] = (None, threshold, 'application/json')
         
-        response = requests.post("{}/v4/analyze".format(self.url, collection_id),
+        response = requests.post("{}/v4/analyze".format(self.url),
                          auth=HTTPBasicAuth('apikey', self.iam_apikey),
                          headers=headers,
                          params=params,
