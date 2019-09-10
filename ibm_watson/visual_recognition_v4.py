@@ -1,6 +1,6 @@
 # coding: utf-8
 
-# Copyright 2018 IBM All Rights Reserved.
+# Copyright 2019 IBM All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,6 +28,9 @@ from ibm_cloud_sdk_core import datetime_to_string, string_to_datetime
 from os.path import basename
 import re
 
+import requests
+from requests.auth import HTTPBasicAuth
+
 
 ##############################################################################
 # Service
@@ -43,8 +46,6 @@ class VisualRecognitionV4(BaseService):
 
     def __init__(
             self,
-            version=default_version,
-            url=default_url,
             iam_apikey=None,
             iam_access_token=None,
             iam_url=None,
@@ -53,6 +54,9 @@ class VisualRecognitionV4(BaseService):
             icp4d_access_token=None,
             icp4d_url=None,
             authentication_type=None,
+            version=default_version,
+            url=default_url,
+            default_headers={},
     ):
         """
         Construct a new client for the Visual Recognition service.
@@ -115,6 +119,7 @@ class VisualRecognitionV4(BaseService):
             icp4d_url=icp4d_url,
             authentication_type=authentication_type)
         self.version = version
+        self.default_headers = default_headers
     
     #########################
     # Analysis
@@ -122,6 +127,7 @@ class VisualRecognitionV4(BaseService):
     
     # https://cloud.ibm.com/apidocs/visual-recognition-v4#list-images
     def analyze(
+            self,
             collection_id,
             image_fp,
             threshold=0.5,
@@ -134,16 +140,13 @@ class VisualRecognitionV4(BaseService):
         be returned.  Constraints: 0.15 <= value <= 1
         
         """
-        import requests
-        from requests.auth import HTTPBasicAuth
-        
         headers = {}
         if self.default_headers:
             headers.update(self.default_headers)
         if 'headers' in kwargs:
             headers.update(kwargs.get('headers'))
         headers[
-            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=classify'
+            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=create_collection'
 
         params = {'version': self.version}
 
@@ -160,14 +163,178 @@ class VisualRecognitionV4(BaseService):
             form_data['threshold'] = (None, threshold, 'application/json')
         
         response = requests.post("{}/v4/analyze".format(self.url, collection_id),
-                         auth=HTTPBasicAuth('apikey', self.api_key),
-                         headers={PREVIEW_HEADER_KEY: PREVIEW_HEADER_VALUE},
+                         auth=HTTPBasicAuth('apikey', self.iam_apikey),
+                         headers=headers,
                          params=params,
-                         data={'features': "objects",
-                               'collection_ids': collection_id,
-                               'threshold': threshold,
-                              },
+                         data=form_data,
                          files={'images_file': image_fp
                                }
                         )
+        return response
+
+    
+    #########################
+    # Collections
+    #########################
+    
+    # https://cloud.ibm.com/apidocs/visual-recognition-v4#create-a-collection
+    def create_collection(
+            self,
+            name=None,
+            description="",
+            training_status=None,
+            **kwargs):
+        """Create a collection that can be used to store images.
+        
+        :param string name: The name of the collection. The name can contain
+               alphanumeric, underscore, hyphen, and dot characters. It
+               cannot begin with the reserved prefix sys-.
+               Constraints: length <= 64, Value must match regular
+               expression ^(?!sys-)[\pL\pN_\-.]*$
+        """
+        headers = {}
+        if self.default_headers:
+            headers.update(self.default_headers)
+        if 'headers' in kwargs:
+            headers.update(kwargs.get('headers'))
+        headers[
+            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=create_collection'
+
+        params = {'version': self.version}
+
+        form_data = {}
+        if name:
+            form_data['name'] = name
+            form_data['description'] = description
+        if training_status:
+            form_data['training_status'] = training_status
+        
+        response = requests.post("{}/v4/collections".format(self.url),
+                         auth=HTTPBasicAuth('apikey', self.iam_apikey),
+                         headers=headers,
+                         params=params,
+                         data=form_data
+                        )
+        return response
+
+
+    # https://cloud.ibm.com/apidocs/visual-recognition-v4#add-images
+    # annotations = [ { 'object': <label>, 'location': {'left':.. , 'height': <bbox height> }}, {}, .. ]
+    def add_image(self, collection_id, image_fp, annotations):
+        headers = {}
+        if self.default_headers:
+            headers.update(self.default_headers)
+        if 'headers' in kwargs:
+            headers.update(kwargs.get('headers'))
+        headers[
+            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=add_image'
+
+        params = {'version': self.version}
+
+        form_data={'training_data': json.dumps({
+            'objects': annotations
+        }) }
+        
+        response = requests.post("{}/v4/collections/{}/images".format(self.url, collection_id),
+                                 auth=HTTPBasicAuth('apikey', self.iam_apikey),
+                                 headers=headers,
+                                 params=params,
+                                 data=form_data,
+                                 files={'images_file': image_fp})
+        return response
+
+
+    def add_image_ltwh(self, collection_id, image_fp, label, ltwh):
+        return self.add_image(collection_id, image_fp, [
+            create_annotation(label, *ltwh)
+        ])
+
+
+    def create_annotation(self, label, left, top, width, height):
+        return {
+            'object': label,
+            'location': {
+                'left': int(left),
+                'top': int(top),
+                'width': int(width),
+                'height': int(height)
+            }
+        }
+    
+    
+    # https://cloud.ibm.com/apidocs/visual-recognition-v4#list-images
+    def list_images(self, collection_id):
+        headers = {}
+        if self.default_headers:
+            headers.update(self.default_headers)
+        if 'headers' in kwargs:
+            headers.update(kwargs.get('headers'))
+        headers[
+            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=list_images'
+
+        params = {'version': self.version}
+        
+        response = requests.get("{}/v4/collections/{}/images".format(self.url, collection_id),
+                                auth=HTTPBasicAuth('apikey', self.iam_apikey),
+                                headers=headers,
+                                params=params)
+        return response
+
+
+    # https://console.bluemix.net/apidocs/visual-recognition-v4#train-a-collection
+    def train(self, collection_id):
+        headers = {}
+        if self.default_headers:
+            headers.update(self.default_headers)
+        if 'headers' in kwargs:
+            headers.update(kwargs.get('headers'))
+        headers[
+            'X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=add_image'
+
+        params = {'version': self.version}
+
+        form_data={'training_data': json.dumps({
+            'objects': annotations
+        }) }
+        
+        response = requests.post("{}/v4/collections/{}/train".format(self.url, collection_id),
+                                 auth=HTTPBasicAuth('apikey', self.iam_apikey),
+                                 headers=headers,
+                                 params=params)
+        return response
+    
+    
+    # https://console.bluemix.net/apidocs/visual-recognition-v4#get-collection-details
+    def get_collection_details(self, collection_id):
+        headers = {}
+        if self.default_headers:
+            headers.update(self.default_headers)
+        if 'headers' in kwargs:
+            headers.update(kwargs.get('headers'))
+        headers['X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=get_collection_details'
+
+        params = {'version': self.version}
+        
+        response = requests.get("{}/v4/collections/{}".format(self.url, collection_id),
+                                auth=HTTPBasicAuth('apikey', self.iam_apikey),
+                                headers=headers,
+                                params=params)
+        return response
+    
+    
+    # https://cloud.ibm.com/apidocs/visual-recognition-v4#get-image-details
+    def get_image_details(collection_id, image_id):
+        headers = {}
+        if self.default_headers:
+            headers.update(self.default_headers)
+        if 'headers' in kwargs:
+            headers.update(kwargs.get('headers'))
+        headers['X-IBMCloud-SDK-Analytics'] = 'service_name=watson_vision_combined;service_version=V4;operation_id=get_image_details'
+
+        params = {'version': self.version}
+        
+        response = requests.get("{}/v4/collections/{}/images/{}".format(self.url, collection_id, image_id),
+                                auth=HTTPBasicAuth('apikey', self.iam_apikey),
+                                headers=headers,
+                                params=params)
         return response
