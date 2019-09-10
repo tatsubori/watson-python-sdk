@@ -224,7 +224,11 @@ class VisualRecognitionV4(BaseService):
 
     # https://cloud.ibm.com/apidocs/visual-recognition-v4#add-images
     # annotations = [ { 'object': <label>, 'location': {'left':.. , 'height': <bbox height> }}, {}, .. ]
-    def add_image(self, collection_id, image_fp, annotations):
+    def add_image(self,
+                  collection_id,
+                  image_fp,
+                  annotations,
+                  **kwargs):
         headers = {}
         if self.default_headers:
             headers.update(self.default_headers)
@@ -267,7 +271,9 @@ class VisualRecognitionV4(BaseService):
     
     
     # https://cloud.ibm.com/apidocs/visual-recognition-v4#list-images
-    def list_images(self, collection_id):
+    def list_images(self,
+                    collection_id,
+                    **kwargs):
         headers = {}
         if self.default_headers:
             headers.update(self.default_headers)
@@ -290,7 +296,9 @@ class VisualRecognitionV4(BaseService):
     #########################
 
     # https://cloud.ibm.com/apidocs/visual-recognition-v4#train-a-collection
-    def train(self, collection_id):
+    def train(self,
+              collection_id,
+              **kwargs):
         headers = {}
         if self.default_headers:
             headers.update(self.default_headers)
@@ -313,7 +321,9 @@ class VisualRecognitionV4(BaseService):
     
     
     # https://console.bluemix.net/apidocs/visual-recognition-v4#get-collection-details
-    def get_collection_details(self, collection_id):
+    def get_collection_details(self,
+                               collection_id,
+                               **kwargs):
         headers = {}
         if self.default_headers:
             headers.update(self.default_headers)
@@ -331,7 +341,10 @@ class VisualRecognitionV4(BaseService):
     
     
     # https://cloud.ibm.com/apidocs/visual-recognition-v4#get-image-details
-    def get_image_details(self, collection_id, image_id):
+    def get_image_details(self,
+                          collection_id,
+                          image_id,
+                          **kwargs):
         headers = {}
         if self.default_headers:
             headers.update(self.default_headers)
