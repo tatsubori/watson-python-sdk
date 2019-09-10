@@ -44,7 +44,7 @@ def create_annotation(self, label, left, top, width, height):
     }
 
 
-def wrap_response(response):
+def wrap_response(response, method):
     if 200 <= response.status_code <= 299:
         if response.status_code == 204 or method == 'HEAD':
             # There is no body content for a HEAD request or a 204 response
@@ -209,7 +209,7 @@ class VisualRecognitionV4(BaseService):
                          files={'images_file': image_fp
                                }
                         )
-        return wrap_response(response)
+        return wrap_response(response, method='POST')
 
     
     #########################
@@ -254,7 +254,7 @@ class VisualRecognitionV4(BaseService):
                          params=params,
                          data=form_data
                         )
-        return wrap_response(response)
+        return wrap_response(response, method='POST')
 
     
     #########################
@@ -288,7 +288,7 @@ class VisualRecognitionV4(BaseService):
                                  params=params,
                                  data=form_data,
                                  files={'images_file': image_fp})
-        return wrap_response(response)
+        return wrap_response(response, method='POST')
 
 
     def add_image_ltwh(self, collection_id, image_fp, label, ltwh):
@@ -315,7 +315,7 @@ class VisualRecognitionV4(BaseService):
                                 auth=HTTPBasicAuth('apikey', self.iam_apikey),
                                 headers=headers,
                                 params=params)
-        return wrap_response(response)
+        return wrap_response(response, method='GET')
 
 
     #########################
@@ -344,7 +344,7 @@ class VisualRecognitionV4(BaseService):
                                  auth=HTTPBasicAuth('apikey', self.iam_apikey),
                                  headers=headers,
                                  params=params)
-        return wrap_response(response)
+        return wrap_response(response, method='POST')
     
     
     # https://console.bluemix.net/apidocs/visual-recognition-v4#get-collection-details
@@ -364,7 +364,7 @@ class VisualRecognitionV4(BaseService):
                                 auth=HTTPBasicAuth('apikey', self.iam_apikey),
                                 headers=headers,
                                 params=params)
-        return wrap_response(response)
+        return wrap_response(response, method='GET')
     
     
     # https://cloud.ibm.com/apidocs/visual-recognition-v4#get-image-details
@@ -385,4 +385,4 @@ class VisualRecognitionV4(BaseService):
                                 auth=HTTPBasicAuth('apikey', self.iam_apikey),
                                 headers=headers,
                                 params=params)
-        return wrap_response(response)
+        return wrap_response(response, method='GET')
