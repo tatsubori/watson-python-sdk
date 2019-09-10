@@ -150,10 +150,11 @@ class VisualRecognitionV4(BaseService):
 
         params = {'version': self.version}
 
-        form_data = {}
+        form_data = {
+            'collection_ids': collection_ids,
+            'features': 'objects'
+        }
         
-        form_data['collection_ids'] = collection_ids
-
         # if images_file:
         #     if not images_filename and hasattr(images_file, 'name'):
         #         images_filename = basename(images_file.name)
