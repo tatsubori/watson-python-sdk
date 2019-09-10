@@ -125,7 +125,7 @@ class VisualRecognitionV4(BaseService):
     # Analysis
     #########################
     
-    # https://cloud.ibm.com/apidocs/visual-recognition-v4#list-images
+    # https://cloud.ibm.com/apidocs/visual-recognition-v4#analyze-images
     def analyze(
             self,
             collection_id,
@@ -217,6 +217,10 @@ class VisualRecognitionV4(BaseService):
                         )
         return response
 
+    
+    #########################
+    # Images
+    #########################
 
     # https://cloud.ibm.com/apidocs/visual-recognition-v4#add-images
     # annotations = [ { 'object': <label>, 'location': {'left':.. , 'height': <bbox height> }}, {}, .. ]
@@ -281,7 +285,11 @@ class VisualRecognitionV4(BaseService):
         return response
 
 
-    # https://console.bluemix.net/apidocs/visual-recognition-v4#train-a-collection
+    #########################
+    # Training
+    #########################
+
+    # https://cloud.ibm.com/apidocs/visual-recognition-v4#train-a-collection
     def train(self, collection_id):
         headers = {}
         if self.default_headers:
