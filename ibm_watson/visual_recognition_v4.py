@@ -44,7 +44,7 @@ def create_annotation(self, label, left, top, width, height):
     }
 
 
-def wrap_response(response, method):
+def wrap_response(response, method, accept_json=True):
     if 200 <= response.status_code <= 299:
         if response.status_code == 204 or method == 'HEAD':
             # There is no body content for a HEAD request or a 204 response
